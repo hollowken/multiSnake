@@ -1,1 +1,1 @@
-Multiplayer snake game using node.js, phaser and WebSockets.
+Multiplayer snake game using node.js and phaser.
