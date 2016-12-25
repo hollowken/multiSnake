@@ -6,7 +6,7 @@ var WebSocketServer = require('ws').Server,
 const MAX_WIDTH = 25;
 const MAX_HEIGHT = 20;
 
-setInterval(updateSnake, 100);
+setInterval(updateSnake, 170);
 
 class Snake {
 
@@ -129,8 +129,8 @@ class Field {
 	}
 
 	generateFruct() {
-		let x = Math.floor(Math.random() * MAX_WIDTH) + 1;
-		let y = Math.floor(Math.random() * MAX_HEIGHT) + 1;
+		let x = Math.floor(Math.random() * MAX_WIDTH-1) + 1;
+		let y = Math.floor(Math.random() * MAX_HEIGHT-1) + 1;
 		this.fructPos[0] = x;
 		this.fructPos[1] = y;
 	}
@@ -156,6 +156,7 @@ function newGame() {
 }
 
 function updateSnake() {
+	if(players.length < 1) return true;
 	field.clearField();
 	let data;
 
@@ -177,7 +178,6 @@ function updateSnake() {
 				data = JSON.stringify({type: 'gameEnd', winner: el.getId});
 				players = [];
 				wss.broadcast(data);
-				return wss.close();
 			}
 			data = JSON.stringify({type: 'updateScore', id: el.getId, score: el.getScore});
 			wss.broadcast(data);
