@@ -1,1 +1,1 @@
-Multiplayer snake game using node.js and phaser.
+Snake game for 2 players using node.js and phaser.
