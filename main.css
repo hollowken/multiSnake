@@ -5,3 +5,22 @@
 canvas {
   margin: 0 auto;
 }
+
+b {
+	font-size: 18px;
+}
+
+b:first-of-type {
+	color: blue;
+	margin-right: 40px;
+}
+
+b:last-of-type {
+	color: red;
+}
+
+a {
+	font-size: 18px;
+	text-decoration: none;
+	color: red;
+}

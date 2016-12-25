@@ -4,10 +4,33 @@
     <meta charset="utf-8">
     <title>Snake Game</title>
     <link rel="stylesheet" href="main.css">
+    <script src="jquery-3.1.1.min.js"></script>
     <script src="phaser.min.js"></script>
     <script src="client.js"></script>
   </head>
   <body>
 
+	<div class='score'>
+		<b>Счет синего игрока: <span id='score0'>0</span></b>
+		<b>Счет красного игрока: <span id='score1'>0</span></b>
+	</div>
+
+  <div class="end">
+    <p id='endText'>Победил синий игрок!</p>
+    <a href="index.html">Сыграть еще раз?</a>
+  </div>
+  
+  <script>
+    $(document).ready(function() {
+      $(".end").hide();
+
+      $('a').click(function(){
+          location.reload();
+      });
+
+    });
+
+
+  </script>
   </body>
 </html>
