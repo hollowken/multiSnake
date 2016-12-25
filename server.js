@@ -6,7 +6,7 @@ var WebSocketServer = require('ws').Server,
 const MAX_WIDTH = 25;
 const MAX_HEIGHT = 20;
 
-setInterval(updateSnake, 350);
+setInterval(updateSnake, 100);
 
 class Snake {
 
@@ -220,7 +220,7 @@ wss.on('connection', function connection(ws) {
 				players[message['id']].direction = message['dir'];
 				break;
 		}
-
+		if (!data) data = JSON.stringify({type: 'none'});
 		wss.broadcast(data);
 		
 	});
