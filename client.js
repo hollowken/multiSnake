@@ -1,56 +1,112 @@
-var ws;
+var	ws,
+	id,
+	fieldNum,
+	field = [],
+    count = 5,
+    interval,
+    game;
+
 if(window.location['hostname'] === 'localhost') ws = new WebSocket('ws://localhost:8000');
 else ws = new WebSocket('ws://81.23.169.28:8000');
+  
+function updateLobby(lobby) {
+	$('.player').empty();
+	for(var i = 0; i < lobby.length; i++) {
+		let text = lobby[i].ftext;
+		if(i === id) text = '(Я) ' + text;
+		$('#'+i).text(text);
+		$('#'+i).append(lobby[i].stext);
+	}
+}
 
-var	id,
-	fieldNum,
-	field = [];
+function changeColor(sel) {
+	let color = sel.value;
+	ws.send(JSON.stringify({type: 'changeColor', color: color}));
+}
+
+function startGame() {
+	$('.count').text('До начала игры ' + count + ' секунд(ы)');
+	count--;
+	if(count <= 0) {
+		clearInterval(interval);
+		interval = null;
+		count = 5;
+	}
+}
+
+$('button').click(function() {
+	ws.send(JSON.stringify({type: 'ready'}));
+});
 
 const MAX_WIDTH = 25;
 const MAX_HEIGHT = 20;
-
-ws.onopen = function() {
-	console.log('Соединение установлено.');
-	ws.send(JSON.stringify({type: 'new'}));
-}
 
 ws.onmessage = function(event) {
 
 	let data = JSON.parse(event.data);
 
 	switch(data['type']) {
-		case 'new':
+		case 'setID':
 			id = data['id'];
 			break;
-		case 'fructCoords':
-			fructCoords = [data['x'], data['y']];
+		case 'updateLobby':
+			updateLobby(data['info']);
 			break;
+	      case 'startGame':
+	        interval = setInterval(startGame, 1000);
+	        break;
+	      case 'stopStart':
+	        clearInterval(interval);
+	        interval = null;
+	        count = 5;
+	        $('.count').text('Ждем пока игроки будут готовы...');
+	        break;
 		case 'update':
 			fieldNum = data['coords'];
 			break;
 		case 'updateScore':
-			$('#score'+data['id']).text(data['score']);
-			break;
-		case 'scoreNull':
-			$('#score0').text(0);
-			$('#score1').text(0);
+			if(data['id'] != id) return true;
+			$('#score').text(data['score']);
 			break;
 		case 'gameEnd':
-			$(".end").show();
-			$("canvas").hide();
-			if(data['winner'] === 0) $('#endText').text('Победил синий игрок!');
-			if(data['winner'] === 1) $('#endText').text('Победил красный игрок!');
+			$('body').append('<a href="index.html">Сыграть еще раз?</a>');
+			break;
+		case 'info':
+			$('body').append('<p>'+ data['text'] +'</p>');
+			break;
+		case 'gameStarted':
+			$('.lobby').hide();
+			$('.score').append('<b id="score">Счет: 0</b>');
+			game = new Phaser.Game(800, 640, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+			break;
+		case 'addPlayersScore':
+			for(var i = 0; i < data['count']; i++) {
+				switch (i) {
+					case 0:
+						$('.score').append('<b>Счет синего игрока: <span id="score0">0</span></b>');
+						break;
+					case 1:
+						$('.score').append('<b>Счет красного игрока: <span id="score1">0</span></b>');
+						break;
+					case 2:
+						$('.score').append('<b>Счет желтого игрока: <span id="score2">0</span></b>');
+						break;
+					case 3:
+						$('.score').append('<b>Счет зеленого игрока: <span id="score3">0</span></b>');
+						break;
+				}
+			}
 			break;
 	}
 		
 }
 
 function preload() {
-	game.load.image('head', 'assets/head.png');
-	game.load.image('tail', 'assets/tail.png');
+	game.load.image('blue', 'assets/blue.png');
+	game.load.image('red', 'assets/red.png');
 	game.load.image('fruct', 'assets/fruct.png');
-	game.load.image('head2', 'assets/head2.png');
-	game.load.image('tail2', 'assets/tail2.png');
+	game.load.image('yellow', 'assets/yellow.png');
+	game.load.image('green', 'assets/green.png');
 	game.load.image('bg', 'assets/bg.png');
 }
 
@@ -90,24 +146,17 @@ function update() {
 			let el = fieldNum[i][j];
 
 			if (el === 0 ) field[i][j].loadTexture('bg');
-			else if (el === 1 ) field[i][j].loadTexture('tail');
-			else if (el === 'head1' ) field[i][j].loadTexture('head');
-			else if (el === 2) field[i][j].loadTexture('tail2');
-			else if (el === 'head2' ) field[i][j].loadTexture('head2');
+			else if (el === 'Красный' ) field[i][j].loadTexture('red');
+			else if (el === 'Синий' ) field[i][j].loadTexture('blue');
+			else if (el === 'Желтый') field[i][j].loadTexture('yellow');
+			else if (el === 'Зеленый' ) field[i][j].loadTexture('green');
 			else if (el === 'f') field[i][j].loadTexture('fruct');
 		}
 	}
 
 }
 
-var game = new Phaser.Game(800, 640, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-
 function sendDir(dir) {
-	data = JSON.stringify({type: 'changeDir', id: id, dir: dir});
-	ws.send(data);
-}
-
-function sendFructCoords(x, y) {
-	data = JSON.stringify({type: 'fructCoords', x: x, y: y});
+	data = JSON.stringify({type: 'changeDir', dir: dir});
 	ws.send(data);
 }

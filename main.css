@@ -8,19 +8,25 @@ canvas {
 
 b {
 	font-size: 18px;
-}
-
-b:first-of-type {
-	color: blue;
-	margin-right: 40px;
-}
-
-b:last-of-type {
-	color: red;
+	margin: 10px 15px;
 }
 
 a {
 	font-size: 18px;
 	text-decoration: none;
 	color: red;
+}
+
+.ready {
+	color: green;
+}
+
+.unready {
+	color: red;
+}
+
+button {
+	width: 100px;
+	height: 30px;
+	margin-top: 50px;
 }
