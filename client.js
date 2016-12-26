@@ -1,4 +1,4 @@
-var ws = new WebSocket('ws://192.168.0.50:3000'),
+var ws = new WebSocket('ws://localhost:3000'),
 	id,
 	fieldNum,
 	field = [];
