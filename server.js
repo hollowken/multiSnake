@@ -1,5 +1,10 @@
-var WebSocketServer = require('ws').Server,
-	wss = new WebSocketServer({port: 3000}),
+var server = require('http').createServer(),
+	url = require('url'),
+	WebSocketServer = require('ws').Server,
+	wss = new WebSocketServer({ server: server }),
+	express = require('express'),
+	app = express(),
+	port = 8000,
 	countID = 0,
 	players = [];
 
@@ -231,3 +236,5 @@ wss.on('connection', function connection(ws) {
 	});
 
 });
+
+server.listen(port);

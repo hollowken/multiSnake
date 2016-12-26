@@ -1,5 +1,8 @@
-var ws = new WebSocket('ws://localhost:3000'),
-	id,
+var ws;
+if(window.location['hostname'] === 'localhost') ws = new WebSocket('ws://localhost:8000');
+else ws = new WebSocket('ws://81.23.169.28:8000');
+
+var	id,
 	fieldNum,
 	field = [];
 
@@ -93,8 +96,8 @@ function update() {
 			else if (el === 'head2' ) field[i][j].loadTexture('head2');
 			else if (el === 'f') field[i][j].loadTexture('fruct');
 		}
-
 	}
+
 }
 
 var game = new Phaser.Game(800, 640, Phaser.AUTO, '', { preload: preload, create: create, update: update });
